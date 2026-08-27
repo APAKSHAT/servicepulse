@@ -21,13 +21,15 @@ async def lifespan(app: FastAPI):
     """Startup: sync polling jobs and start the scheduler.
     Shutdown: stop the scheduler gracefully.
     """
-    async with async_session() as db:
-        await sync_jobs(db)
-    scheduler.start()
-    logging.getLogger("servicepulse").info("Scheduler started")
+    if os.getenv("TESTING") != "1":
+        async with async_session() as db:
+            await sync_jobs(db)
+        scheduler.start()
+        logging.getLogger("servicepulse").info("Scheduler started")
     yield
-    scheduler.shutdown(wait=False)
-    logging.getLogger("servicepulse").info("Scheduler stopped")
+    if os.getenv("TESTING") != "1":
+        scheduler.shutdown(wait=False)
+        logging.getLogger("servicepulse").info("Scheduler stopped")
 
 
 app = FastAPI(

@@ -1,5 +1,8 @@
 import asyncio
+import os
 from collections.abc import AsyncGenerator
+
+os.environ["TESTING"] = "1"
 
 import pytest
 import pytest_asyncio

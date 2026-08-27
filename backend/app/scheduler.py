@@ -1,4 +1,5 @@
 import logging
+import os
 
 import httpx
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -59,6 +60,9 @@ async def sync_jobs(db: AsyncSession) -> None:
     Called at startup and whenever endpoints are added or removed so
     that the polling schedule stays in sync with the database.
     """
+    if os.getenv("TESTING") == "1":
+        return
+
     # Remove all existing poll jobs.
     for job in scheduler.get_jobs():
         if job.id.startswith("poll_"):
